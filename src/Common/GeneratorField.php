@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 class GeneratorField
 {
     /** @var string */
+    public $fieldTitle;
     public $name;
     public $dbInput;
     public $htmlInput;
@@ -125,6 +126,7 @@ class GeneratorField
     public static function parseFieldFromFile($fieldInput)
     {
         $field = new self();
+        $field->fieldTitle = isset($fieldInput['fieldTitle']) ? $fieldInput['fieldTitle'] : Str::title(str_replace('_', ' ', $fieldInput['name']));
         $field->name = $fieldInput['name'];
         $field->parseDBType($fieldInput['dbType']);
         $field->parseHtmlInput(isset($fieldInput['htmlType']) ? $fieldInput['htmlType'] : '');

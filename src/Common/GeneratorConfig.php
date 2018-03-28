@@ -43,6 +43,7 @@ class GeneratorConfig
     public $mPlural;
     public $mCamel;
     public $mCamelPlural;
+    public $mCamelPluralRoute;
     public $mSnake;
     public $mSnakePlural;
     public $mDashed;
@@ -54,6 +55,8 @@ class GeneratorConfig
 
     public $forceMigrate;
 
+    public $featuresName;
+
     /* Generator Options */
     public $options;
 
@@ -62,6 +65,7 @@ class GeneratorConfig
 
     /* Command Options */
     public static $availableOptions = [
+        'featuresName',
         'fieldsFile',
         'jsonFromGUI',
         'tableName',
@@ -99,6 +103,7 @@ class GeneratorConfig
         $this->loadPaths();
         $this->prepareTableName();
         $this->preparePrimaryName();
+        $this->prepareFeaturesName();
         $this->loadNamespaces($commandData);
         $commandData = $this->loadDynamicVariables($commandData);
     }
@@ -221,6 +226,7 @@ class GeneratorConfig
         $commandData->addDynamicVariable('$MODEL_NAME_CAMEL$', $this->mCamel);
         $commandData->addDynamicVariable('$MODEL_NAME_PLURAL$', $this->mPlural);
         $commandData->addDynamicVariable('$MODEL_NAME_PLURAL_CAMEL$', $this->mCamelPlural);
+        $commandData->addDynamicVariable('$MODEL_NAME_PLURAL_CAMEL_ROUTE$', $this->mCamelPluralRoute);
         $commandData->addDynamicVariable('$MODEL_NAME_SNAKE$', $this->mSnake);
         $commandData->addDynamicVariable('$MODEL_NAME_PLURAL_SNAKE$', $this->mSnakePlural);
         $commandData->addDynamicVariable('$MODEL_NAME_DASHED$', $this->mDashed);
@@ -229,6 +235,8 @@ class GeneratorConfig
         $commandData->addDynamicVariable('$MODEL_NAME_PLURAL_SLASH$', $this->mSlashPlural);
         $commandData->addDynamicVariable('$MODEL_NAME_HUMAN$', $this->mHuman);
         $commandData->addDynamicVariable('$MODEL_NAME_PLURAL_HUMAN$', $this->mHumanPlural);
+
+        $commandData->addDynamicVariable('$FEATURES_NAME$', $this->featuresName);
 
         if (!empty($this->prefixes['route'])) {
             $commandData->addDynamicVariable('$ROUTE_NAMED_PREFIX$', $this->prefixes['route'].'.');
@@ -269,6 +277,17 @@ class GeneratorConfig
         return $commandData;
     }
 
+    public function prepareFeaturesName()
+    {
+        if ($this->getOption('featuresName')) {
+            $featuresName       = $this->getOption('featuresName');
+            $this->featuresName = mb_convert_encoding($featuresName, 'UTF-8',
+                mb_detect_encoding($featuresName, 'BIG-5, ISO-8859-1, ASCII, UTF-8', true));
+        } else {
+            $this->featuresName = $this->mHumanPlural;
+        }
+    }
+
     public function prepareTableName()
     {
         if ($this->getOption('tableName')) {
@@ -292,6 +311,7 @@ class GeneratorConfig
         $this->mPlural = Str::plural($this->mName);
         $this->mCamel = Str::camel($this->mName);
         $this->mCamelPlural = Str::camel($this->mPlural);
+        $this->mCamelPluralRoute = str_replace('_', '-', Str::snake($this->mName));
         $this->mSnake = Str::snake($this->mName);
         $this->mSnakePlural = Str::snake($this->mPlural);
         $this->mDashed = str_replace('_', '-', Str::snake($this->mSnake));

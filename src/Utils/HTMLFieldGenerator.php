@@ -56,6 +56,17 @@ class HTMLFieldGenerator
                 }
                 $fieldTemplate = str_replace('$RADIO_BUTTONS$', implode("\n", $radioButtons), $fieldTemplate);
                 break;
+
+            case 'toggle-switch':
+                $fieldTemplate = get_template('scaffold.fields.toggle-switch', $templateType);
+                break;
+        }
+
+        $validationsSet = (isset($field->validations) ? $field->validations : '');
+        if (preg_match("/required/i", $validationsSet)) {
+            $fieldTemplate = str_replace('$VALUE_REQUIRED_PROMPT$', '<i class="fa fa-star fa-1 red"></i>', $fieldTemplate);
+        } else {
+            $fieldTemplate = str_replace('$VALUE_REQUIRED_PROMPT$', '', $fieldTemplate);
         }
 
         return $fieldTemplate;

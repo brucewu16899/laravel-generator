@@ -224,6 +224,7 @@ class BaseCommand extends Command
     public function getOptions()
     {
         return [
+            ['featuresName', null, InputOption::VALUE_REQUIRED, 'For Menu and Index And Form Title Name'],
             ['fieldsFile', null, InputOption::VALUE_REQUIRED, 'Fields input as json file'],
             ['jsonFromGUI', null, InputOption::VALUE_REQUIRED, 'Direct Json string while using GUI interface'],
             ['tableName', null, InputOption::VALUE_REQUIRED, 'Table Name'],

@@ -132,6 +132,9 @@ class ViewGenerator extends BaseGenerator
             );
         }
 
+        $tableBodyFieldsCount = count($tableBodyFields);
+        $templateData         = str_replace('$FIELD_BODY_FIELDS_COUNT$', $tableBodyFieldsCount + 2, $templateData);
+
         $tableBodyFields = implode(infy_nl_tab(1, 3), $tableBodyFields);
 
         return str_replace('$FIELD_BODY$', $tableBodyFields, $templateData);
