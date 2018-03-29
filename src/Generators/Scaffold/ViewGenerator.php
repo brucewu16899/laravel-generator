@@ -349,14 +349,38 @@ class ViewGenerator extends BaseGenerator
         $fieldTemplate = get_template('scaffold.views.show_field', $this->templateType);
 
         $fieldsStr = '';
+        $fieldsCount = count($this->commandData->fields);
+        $loopKey = 0;
 
-        foreach ($this->commandData->fields as $field) {
-            $singleFieldStr = str_replace('$FIELD_NAME_TITLE$', Str::title(str_replace('_', ' ', $field->name)),
-                $fieldTemplate);
+        foreach ($this->commandData->fields as $key => $field) {
+            if (isset($field->isPrimary) && ($field->isPrimary === true)) {
+                $fieldsCount--;
+                continue;
+            }
+
+            //$singleFieldStr = str_replace('$FIELD_NAME_TITLE$', Str::title(str_replace('_', ' ', $field->name)),
+            //    $fieldTemplate);
+            $filedNameTitle = isset($field->fieldTitle) ? $field->fieldTitle : Str::title(str_replace('_', ' ', $field->name));
+            $singleFieldStr = str_replace('$FIELD_NAME_TITLE$', $filedNameTitle, $fieldTemplate);
             $singleFieldStr = str_replace('$FIELD_NAME$', $field->name, $singleFieldStr);
             $singleFieldStr = fill_template($this->commandData->dynamicVars, $singleFieldStr);
 
-            $fieldsStr .= $singleFieldStr."\n\n";
+            //$fieldsStr .= $singleFieldStr."\n\n";
+
+            if ($loopKey % 2 === 0) {
+                if ($loopKey === ($fieldsCount - 1)) {
+                    // last td
+                    $fieldsStr .= '<tr>' . PHP_EOL . $singleFieldStr . PHP_EOL . '</tr>';
+                } else {
+                    // first td
+                    $fieldsStr .= '<tr>' . PHP_EOL . $singleFieldStr;
+                }
+            } else {
+                // second or last td
+                $fieldsStr .= PHP_EOL . $singleFieldStr . PHP_EOL . '</tr>' . PHP_EOL;
+            }
+
+            $loopKey++;
         }
 
         FileUtil::createFile($this->path, 'show_fields.blade.php', $fieldsStr);
